@@ -17,8 +17,27 @@ function scrollToBottom () {
 }
 
 socket.on('connect', function () {
-  console.log('Connected to server');
+  var params = jQuery.deparam(window.location.search); // palauttaa objektin, Andrewn oma
+
+  socket.emit('join', params, function (err) {
+    if (err) {
+      alert(err);
+      window.location.href = '/';
+    } else {
+      console.log('No error');
+    }
+  });
 });
+
+socket.on('updateUsersList', function (users) {
+  var ol = $('<ol></ol>');
+
+  users.forEach(function (user) {
+    ol.append($('<li></li>').text(user));
+  });
+  $('#users').html(ol);
+});
+
 
 socket.on('newMessage', function (message) {
   var formattedTime = moment(message.createdAt).format('h:mm a');
